@@ -45,15 +45,14 @@ app.post("/login", async (req, res) => {
 
     const isPasswordValid = await user.validatePassword(password);
     if (isPasswordValid) {
+      const token = await user.getJwt();
+      res.cookie("token", token, {
+        expires: new Date(Date.now() + 8 * 3600000),
+      });
       res.send("Login Successfull!");
     } else {
       throw new Error("Invalid Credentials");
     }
-
-    const token = await user.getJwt();
-    res.cookie("token", token, {
-      expires: new Date(Date.now() + 8 * 3600000),
-    });
   } catch (err) {
     res.status(400).send(err.message);
   }
